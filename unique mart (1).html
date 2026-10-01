@@ -1,0 +1,1313 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-[#f1f3f6]">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unique Mart - Premium Footwear, Crockery, Electronics & Daily Essentials</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Google Fonts Inter -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    
+    .fk-blue { background-color: #2874f0; }
+    .fk-blue-dark { background-color: #1a5bb8; }
+    .fk-yellow { background-color: #ff9f00; }
+    .fk-orange { background-color: #fb641b; }
+    .text-fk-blue { color: #2874f0; }
+
+    /* Custom scrollbar styling */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f3f6;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #c2c2c2;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #999999;
+    }
+
+    /* Modal Backdrop Transitions */
+    .modal-active {
+      display: flex !important;
+      animation: fadeIn 0.2s ease-out forwards;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.98); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    /* Toast Notification CSS */
+    #toastContainer {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 9999;
+    }
+  </style>
+</head>
+<body class="flex flex-col min-h-screen text-gray-800 antialiased selection:bg-blue-500 selection:text-white">
+
+  <!-- Top Navigation Header -->
+  <header class="fk-blue sticky top-0 z-40 text-white shadow-md">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 py-2.5 flex items-center justify-between gap-2 sm:gap-6">
+      
+      <!-- Brand Logo -->
+      <a href="#" onclick="filterByCategory('All'); return false;" class="flex flex-col items-start leading-none shrink-0 group">
+        <span class="text-xl sm:text-2xl font-extrabold italic tracking-wider text-white group-hover:text-yellow-300 transition">UNIQUE MART</span>
+        <span class="text-[10px] sm:text-xs text-yellow-300 font-semibold italic flex items-center gap-1">
+          <span id="headerStoreName">Multi-Category Superstore</span>
+          <i class="fa-solid fa-circle-check text-[9px] text-yellow-300 ml-0.5"></i>
+        </span>
+      </a>
+
+      <!-- Search Bar -->
+      <div class="flex-1 max-w-2xl relative">
+        <div class="relative flex items-center">
+          <input 
+            type="text" 
+            id="searchInput"
+            oninput="handleSearch()"
+            placeholder="Search footwear, sneakers, sandals, dinner sets, tea cups, headphones, face wash..." 
+            class="w-full py-2 pl-4 pr-10 text-xs sm:text-sm text-gray-800 bg-white rounded-sm focus:outline-none focus:ring-2 focus:ring-yellow-400 shadow-inner"
+          />
+          <button onclick="handleSearch()" class="absolute right-3 text-fk-blue hover:text-blue-700">
+            <i class="fa-solid fa-magnifying-glass"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Header Actions -->
+      <div class="flex items-center gap-1.5 sm:gap-3 shrink-0">
+        
+        <!-- Add Product Button -->
+        <button 
+          onclick="openAddProductModal()" 
+          class="bg-white/10 hover:bg-white/20 sm:bg-white sm:text-fk-blue sm:hover:bg-blue-50 font-semibold p-2 sm:px-3 sm:py-1.5 rounded-sm text-xs sm:text-sm flex items-center gap-1.5 transition shadow-sm"
+          title="Add New Item"
+        >
+          <i class="fa-solid fa-circle-plus text-sm sm:text-base"></i>
+          <span class="hidden md:inline">Add Item</span>
+        </button>
+
+        <!-- Orders Button -->
+        <button 
+          onclick="openOrdersModal()" 
+          class="bg-white/10 hover:bg-white/20 text-white font-semibold p-2 sm:px-3 sm:py-1.5 rounded-sm text-xs sm:text-sm flex items-center gap-1.5 transition shadow-sm"
+          title="My Orders History"
+        >
+          <i class="fa-solid fa-clock-rotate-left text-sm"></i>
+          <span class="hidden lg:inline">Orders</span>
+        </button>
+
+        <!-- Store Settings Button -->
+        <button 
+          onclick="openSettingsModal()" 
+          class="bg-white/10 hover:bg-white/20 text-white font-semibold p-2 sm:px-3 sm:py-1.5 rounded-sm text-xs sm:text-sm flex items-center gap-1.5 transition shadow-sm"
+          title="Change WhatsApp Number, UPI & Store Name"
+        >
+          <i class="fa-solid fa-gear text-sm"></i>
+          <span class="hidden lg:inline">Settings</span>
+        </button>
+
+        <!-- Cart Button -->
+        <button 
+          onclick="toggleCartDrawer()" 
+          class="relative flex items-center gap-2 font-semibold text-xs sm:text-sm bg-blue-700 sm:bg-blue-800 hover:bg-blue-900 px-3 py-1.5 rounded transition shadow-sm"
+        >
+          <i class="fa-solid fa-cart-shopping text-base sm:text-lg"></i>
+          <span class="hidden sm:inline">Cart</span>
+          <span id="cartBadge" class="bg-yellow-400 text-gray-900 font-extrabold text-[11px] w-5 h-5 rounded-full flex items-center justify-center border-2 border-[#2874f0]">
+            0
+          </span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Categories Sub-Header Bar -->
+  <nav class="bg-white border-b shadow-sm sticky top-[53px] z-30 overflow-x-auto whitespace-nowrap">
+    <div class="max-w-7xl mx-auto px-4 py-2.5 flex items-center gap-2 sm:gap-4 text-xs sm:text-sm font-medium text-gray-700" id="categoryContainer">
+      <!-- Dynamic Categories injected here -->
+    </div>
+  </nav>
+
+  <!-- Main Content Layout -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-2 sm:p-4 space-y-4">
+
+    <!-- Promotional Hero Banner -->
+    <div class="bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-800 rounded-lg p-4 sm:p-6 text-white shadow-md flex flex-col md:flex-row items-center justify-between gap-4 relative overflow-hidden">
+      
+      <div class="space-y-1.5 text-center md:text-left z-10">
+        <div class="flex flex-wrap items-center justify-center md:justify-start gap-2">
+          <span class="bg-yellow-400 text-gray-900 text-[10px] sm:text-[11px] font-extrabold px-2.5 py-0.5 rounded uppercase tracking-wider shadow-sm">
+            👟 NEW FOOTWEAR & LIFESTYLE COLLECTION 🍽️
+          </span>
+          <span class="bg-white/20 text-white text-[10px] sm:text-[11px] font-medium px-2 py-0.5 rounded backdrop-blur-sm">
+            Fast Delivery & Safe Express Packaging
+          </span>
+        </div>
+        <h1 class="text-xl sm:text-3xl font-black leading-tight tracking-tight">
+          Men's & Women's Footwear, Crockery, Electronics & Essentials
+        </h1>
+        <p class="text-xs sm:text-sm text-blue-100 max-w-2xl">
+          Discover trendy sneakers, formal shoes, ethnic heels, dinner sets, gadgets, and personal care items — <strong>Up to 60% OFF</strong>. Instant WhatsApp Order & UPI Payments.
+        </p>
+      </div>
+
+      <div class="flex flex-col sm:flex-row items-center gap-2 shrink-0 z-10 w-full md:w-auto">
+        <a href="#productsGrid" class="w-full sm:w-auto text-center fk-yellow hover:bg-yellow-500 text-gray-900 font-bold text-xs sm:text-sm px-6 py-2.5 rounded shadow-md transition transform active:scale-95">
+          Shop Now <i class="fa-solid fa-arrow-right ml-1"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- Active Filter & Stats Header -->
+    <div class="bg-white p-3 rounded-md shadow-sm flex flex-wrap items-center justify-between gap-3 border">
+      <div class="flex items-center gap-3">
+        <div>
+          <h2 class="font-bold text-gray-800 text-sm sm:text-base flex items-center gap-2" id="currentCategoryTitle">
+            All Products
+          </h2>
+          <p class="text-[11px] sm:text-xs text-gray-500" id="productCountText">Showing products</p>
+        </div>
+      </div>
+      
+      <!-- Sort Controls -->
+      <div class="flex items-center gap-2 ml-auto">
+        <label for="sortBy" class="text-xs text-gray-500 font-medium hidden sm:inline">Sort By:</label>
+        <select id="sortBy" onchange="renderProducts()" class="text-xs sm:text-sm border border-gray-300 rounded px-2.5 py-1.5 bg-white text-gray-700 font-medium focus:outline-none focus:border-fk-blue shadow-sm">
+          <option value="featured">Featured / Bestseller</option>
+          <option value="low-high">Price: Low to High</option>
+          <option value="high-low">Price: High to Low</option>
+          <option value="discount">Highest Discount</option>
+          <option value="rating">Highest Rated</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Products Grid -->
+    <div id="productsGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2.5 sm:gap-4">
+      <!-- Product items rendered dynamically via JavaScript -->
+    </div>
+
+    <!-- Empty State Container -->
+    <div id="noResults" class="hidden bg-white rounded-md p-10 text-center shadow-sm border space-y-3">
+      <i class="fa-solid fa-shoe-prints text-5xl text-gray-300"></i>
+      <h3 class="text-lg font-bold text-gray-700">No matching products found</h3>
+      <p class="text-xs text-gray-500 max-w-md mx-auto">Try adjusting your search query or filter, or add a new item using the "Add Item" button above.</p>
+      <button onclick="resetFilters()" class="fk-blue text-white text-xs font-semibold px-4 py-2 rounded shadow hover:bg-blue-700 transition">
+        Reset Search & Filters
+      </button>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-[#172337] text-gray-300 mt-10 text-xs">
+    <div class="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+      <div>
+        <h4 class="text-white font-bold mb-3 uppercase tracking-wider text-xs flex items-center gap-1.5">
+          <i class="fa-solid fa-store text-yellow-400"></i> About Unique Mart
+        </h4>
+        <p class="text-gray-400 leading-relaxed text-[11px]" id="footerStoreAbout">
+          Unique Mart. Your premier multi-category store for trending footwear (men's sneakers, formal leather shoes, women's heels), bone china dinner sets, electronics, and daily essentials.
+        </p>
+      </div>
+      <div>
+        <h4 class="text-white font-bold mb-3 uppercase tracking-wider text-xs flex items-center gap-1.5">
+          <i class="fa-solid fa-headset text-yellow-400"></i> Contact & Support
+        </h4>
+        <ul class="space-y-2 text-gray-400 text-[11px]">
+          <li><i class="fa-solid fa-phone text-yellow-400 w-4"></i> Phone: <span id="footerPhone">+91 77079 30601</span></li>
+          <li><i class="fa-brands fa-whatsapp text-green-400 w-4"></i> WhatsApp: <span id="footerWhatsapp">+91 77079 30601</span></li>
+          <li><i class="fa-solid fa-qrcode text-blue-400 w-4"></i> UPI ID: <span id="footerUpi">7707930601@slc</span></li>
+          <li><i class="fa-solid fa-truck-fast text-green-400 w-4"></i> Fast Doorstep Shipping</li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="text-white font-bold mb-3 uppercase tracking-wider text-xs flex items-center gap-1.5">
+          <i class="fa-solid fa-tags text-yellow-400"></i> Top Categories
+        </h4>
+        <ul class="space-y-1.5 text-gray-400 text-[11px]">
+          <li><a href="#" onclick="filterByCategory('Footwear'); return false;" class="hover:text-yellow-300">• Footwear (Sneakers, Shoes & Sandals)</a></li>
+          <li><a href="#" onclick="filterByCategory('Dinner Sets'); return false;" class="hover:text-yellow-300">• Dinner Sets & Opalware</a></li>
+          <li><a href="#" onclick="filterByCategory('Tea & Coffee Sets'); return false;" class="hover:text-yellow-300">• Ceramic Mugs & Tea Sets</a></li>
+          <li><a href="#" onclick="filterByCategory('Glassware'); return false;" class="hover:text-yellow-300">• Glassware & Tumblers</a></li>
+          <li><a href="#" onclick="filterByCategory('Electronics & Accessories'); return false;" class="hover:text-yellow-300">• Data Cables & Headphones</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="text-white font-bold mb-3 uppercase tracking-wider text-xs flex items-center gap-1.5">
+          <i class="fa-solid fa-location-dot text-yellow-400"></i> Store Address
+        </h4>
+        <p class="text-gray-400 text-[11px]" id="footerAddress">
+          Unique Mart Superstore, Central Market.
+        </p>
+        <div class="mt-3">
+          <span class="bg-green-600/30 text-green-300 border border-green-500/30 font-bold text-[10px] px-2.5 py-1 rounded inline-block">
+            <i class="fa-solid fa-shield-check mr-1"></i> 100% Verified Quality & Safe Packaging
+          </span>
+        </div>
+      </div>
+    </div>
+    <div class="border-t border-gray-700/80 text-center py-4 text-gray-500 text-[11px]">
+      &copy; <span id="currentYear"></span> Unique Mart. All Rights Reserved.
+    </div>
+  </footer>
+
+  <!-- MODAL 1: ADD PRODUCT MODAL -->
+  <div id="addProductModal" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center p-3 backdrop-blur-sm">
+    <div class="bg-white w-full max-w-lg rounded-lg shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+      <div class="fk-blue px-4 py-3 text-white flex justify-between items-center">
+        <h3 class="font-bold text-sm sm:text-base flex items-center gap-2">
+          <i class="fa-solid fa-plus-circle text-yellow-300"></i> Add New Store Product
+        </h3>
+        <button onclick="closeAddProductModal()" class="text-white hover:text-gray-200 text-lg">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <form id="addProductForm" onsubmit="handleAddProductSubmit(event)" class="p-4 overflow-y-auto space-y-3 flex-1 text-xs sm:text-sm">
+        <div>
+          <label class="block font-semibold text-gray-700 mb-1">Product Title *</label>
+          <input type="text" id="newTitle" required placeholder="e.g. Men's Breathable Lightweight Running Shoes" class="w-full border rounded p-2 focus:border-fk-blue focus:outline-none">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold text-gray-700 mb-1">Category *</label>
+            <select id="newCategory" required class="w-full border rounded p-2 focus:border-fk-blue focus:outline-none">
+              <option value="Footwear">Footwear (Shoes & Sandals)</option>
+              <option value="Dinner Sets">Dinner Sets</option>
+              <option value="Tea & Coffee Sets">Tea & Coffee Sets</option>
+              <option value="Glassware">Glassware</option>
+              <option value="Electronics & Accessories">Electronics & Accessories</option>
+              <option value="Beauty & Skincare">Beauty & Skincare</option>
+              <option value="Clothing & Sarees">Clothing & Sarees</option>
+              <option value="Toys & Baby Items">Toys & Baby Items</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-semibold text-gray-700 mb-1">Star Rating (1-5)</label>
+            <input type="number" id="newRating" min="1" max="5" step="0.1" value="4.8" class="w-full border rounded p-2 focus:border-fk-blue focus:outline-none">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold text-gray-700 mb-1">Selling Price (₹) *</label>
+            <input type="number" id="newPrice" required placeholder="999" class="w-full border rounded p-2 focus:border-fk-blue focus:outline-none">
+          </div>
+          <div>
+            <label class="block font-semibold text-gray-700 mb-1">Original Price / MRP (₹)</label>
+            <input type="number" id="newMrp" placeholder="1999" class="w-full border rounded p-2 focus:border-fk-blue focus:outline-none">
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-gray-700 mb-1">Image URL</label>
+          <input type="url" id="newImageUrl" placeholder="https://images.unsplash.com/photo..." class="w-full border rounded p-2 focus:border-fk-blue focus:outline-none">
+        </div>
+
+        <div>
+          <label class="block font-semibold text-gray-700 mb-1">Description</label>
+          <textarea id="newDesc" rows="2" placeholder="High quality durable material with comfortable fit..." class="w-full border rounded p-2 focus:border-fk-blue focus:outline-none"></textarea>
+        </div>
+
+        <div class="pt-2 flex justify-end gap-2 border-t">
+          <button type="button" onclick="closeAddProductModal()" class="px-4 py-2 border rounded text-gray-600 font-semibold hover:bg-gray-100">
+            Cancel
+          </button>
+          <button type="submit" class="fk-orange text-white font-bold px-5 py-2 rounded shadow hover:opacity-90 transition">
+            Save Item
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 2: STORE SETTINGS MODAL -->
+  <div id="settingsModal" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center p-3 backdrop-blur-sm">
+    <div class="bg-white w-full max-w-md rounded-lg shadow-2xl overflow-hidden flex flex-col">
+      <div class="fk-blue px-4 py-3 text-white flex justify-between items-center">
+        <h3 class="font-bold text-sm sm:text-base flex items-center gap-2">
+          <i class="fa-solid fa-gear text-yellow-300"></i> Store Payment & WhatsApp Settings
+        </h3>
+        <button onclick="closeSettingsModal()" class="text-white hover:text-gray-200 text-lg">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <form id="settingsForm" onsubmit="handleSaveSettings(event)" class="p-4 space-y-3 text-xs sm:text-sm">
+        <div>
+          <label class="block font-semibold text-gray-700 mb-1">Store Name / Subtitle</label>
+          <input type="text" id="settingStoreName" placeholder="Unique Mart" class="w-full border rounded p-2 focus:border-fk-blue focus:outline-none">
+        </div>
+
+        <div>
+          <label class="block font-semibold text-gray-700 mb-1">WhatsApp Order Mobile Number *</label>
+          <input type="text" id="settingWhatsapp" required placeholder="917707930601" class="w-full border rounded p-2 focus:border-fk-blue focus:outline-none">
+        </div>
+
+        <div>
+          <label class="block font-semibold text-gray-700 mb-1">Store UPI ID *</label>
+          <input type="text" id="settingUpi" required placeholder="7707930601@slc" class="w-full border rounded p-2 focus:border-fk-blue focus:outline-none">
+        </div>
+
+        <div>
+          <label class="block font-semibold text-gray-700 mb-1">Store Address</label>
+          <input type="text" id="settingAddress" placeholder="Unique Mart Main Market" class="w-full border rounded p-2 focus:border-fk-blue focus:outline-none">
+        </div>
+
+        <div class="pt-2 flex justify-end gap-2 border-t">
+          <button type="button" onclick="closeSettingsModal()" class="px-4 py-2 border rounded text-gray-600 font-semibold hover:bg-gray-100">
+            Cancel
+          </button>
+          <button type="submit" class="fk-blue text-white font-bold px-5 py-2 rounded shadow hover:bg-blue-700 transition">
+            Save Settings
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 3: ORDER HISTORY MODAL -->
+  <div id="ordersModal" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center p-3 backdrop-blur-sm">
+    <div class="bg-white w-full max-w-xl rounded-lg shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">
+      <div class="fk-blue px-4 py-3 text-white flex justify-between items-center">
+        <h3 class="font-bold text-sm sm:text-base flex items-center gap-2">
+          <i class="fa-solid fa-clock-rotate-left text-yellow-300"></i> My Recent Orders
+        </h3>
+        <button onclick="closeOrdersModal()" class="text-white hover:text-gray-200 text-lg">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div id="ordersListContainer" class="p-4 overflow-y-auto space-y-3 flex-1 text-xs">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 4: QUICK PRODUCT VIEW MODAL -->
+  <div id="quickViewModal" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center p-3 backdrop-blur-sm">
+    <div class="bg-white w-full max-w-2xl rounded-lg shadow-2xl overflow-hidden flex flex-col md:flex-row max-h-[90vh] relative">
+      <button onclick="closeQuickViewModal()" class="absolute top-2 right-2 bg-gray-100 hover:bg-gray-200 text-gray-700 w-8 h-8 rounded-full flex items-center justify-center z-10">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <div class="w-full md:w-1/2 bg-gray-50 p-4 flex items-center justify-center border-b md:border-b-0 md:border-r">
+        <img id="quickViewImg" src="" alt="Product" class="max-h-64 object-contain rounded">
+      </div>
+      <div class="w-full md:w-1/2 p-5 flex flex-col justify-between space-y-4 overflow-y-auto">
+        <div>
+          <span id="quickViewCategory" class="text-[10px] uppercase tracking-wider font-bold bg-blue-100 text-blue-800 px-2 py-0.5 rounded">Category</span>
+          <h3 id="quickViewTitle" class="text-base sm:text-lg font-bold text-gray-800 mt-2 leading-snug">Product Title</h3>
+          
+          <div class="flex items-center gap-2 mt-2">
+            <span id="quickViewRating" class="bg-green-700 text-white text-xs font-bold px-1.5 py-0.5 rounded flex items-center gap-1">
+              4.8 <i class="fa-solid fa-star text-[10px]"></i>
+            </span>
+            <span class="text-xs text-gray-500 font-medium">Genuine Quality Guarantee</span>
+          </div>
+
+          <div class="mt-3 flex items-baseline gap-2">
+            <span id="quickViewPrice" class="text-2xl font-black text-gray-900">₹0</span>
+            <span id="quickViewMrp" class="text-xs text-gray-400 line-through">₹0</span>
+            <span id="quickViewDiscount" class="text-xs font-bold text-green-600">0% OFF</span>
+          </div>
+
+          <p id="quickViewDesc" class="text-xs text-gray-600 mt-3 leading-relaxed">Product description here.</p>
+        </div>
+
+        <div class="pt-3 border-t flex items-center gap-2">
+          <button id="quickViewAddBtn" onclick="" class="flex-1 fk-yellow hover:bg-yellow-500 text-gray-900 font-bold py-2.5 px-4 rounded text-xs sm:text-sm flex items-center justify-center gap-2 transition shadow">
+            <i class="fa-solid fa-cart-plus"></i> Add To Cart
+          </button>
+          <button id="quickViewBuyBtn" onclick="" class="flex-1 fk-orange hover:opacity-90 text-white font-bold py-2.5 px-4 rounded text-xs sm:text-sm flex items-center justify-center gap-2 transition shadow">
+            Buy Now
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 5: CART SLIDE-IN DRAWER & WHATSAPP CHECKOUT -->
+  <div id="cartDrawer" class="fixed inset-0 bg-black/60 z-50 hidden justify-end transition-opacity backdrop-blur-xs">
+    <div class="bg-white w-full max-w-md h-full shadow-2xl flex flex-col justify-between transform transition-transform">
+      
+      <!-- Drawer Header -->
+      <div class="fk-blue p-4 text-white flex justify-between items-center shrink-0">
+        <h3 class="font-bold text-sm sm:text-base flex items-center gap-2">
+          <i class="fa-solid fa-cart-shopping"></i> My Shopping Cart (<span id="cartHeaderCount">0</span>)
+        </h3>
+        <button onclick="toggleCartDrawer()" class="text-white hover:text-gray-200 text-xl">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Drawer Body Content -->
+      <div class="p-4 flex-1 overflow-y-auto space-y-4">
+        
+        <!-- Cart Items List -->
+        <div id="cartItemsList" class="space-y-3">
+          <!-- Dynamic Cart Items injected here -->
+        </div>
+
+        <!-- Checkout Form Section -->
+        <div id="checkoutFormSection" class="p-4 space-y-3 border-t bg-gray-50 text-xs rounded-md shadow-inner">
+          <h4 class="font-bold text-gray-800 text-sm flex items-center gap-1.5">
+            <i class="fa-solid fa-truck-ramp-box text-fk-blue"></i> Delivery & Payment Details
+          </h4>
+
+          <div>
+            <label class="block font-semibold text-gray-700 mb-1">Full Name *</label>
+            <input type="text" id="custName" required placeholder="Enter your full name" class="w-full border rounded p-2 focus:border-fk-blue focus:outline-none bg-white">
+          </div>
+
+          <div>
+            <label class="block font-semibold text-gray-700 mb-1">Mobile Number *</label>
+            <input type="tel" id="custPhone" required placeholder="10 Digit Mobile Number" class="w-full border rounded p-2 focus:border-fk-blue focus:outline-none bg-white">
+          </div>
+
+          <div>
+            <label class="block font-semibold text-gray-700 mb-1">Delivery Address *</label>
+            <textarea id="custAddress" rows="2" required placeholder="House No, Landmark, Sector / Street / Area" class="w-full border rounded p-2 focus:border-fk-blue focus:outline-none bg-white"></textarea>
+          </div>
+
+          <div>
+            <label class="block font-semibold text-gray-700 mb-1">Payment Option *</label>
+            <select id="paymentMethod" onchange="toggleUpiDetails()" class="w-full border rounded p-2 focus:border-fk-blue focus:outline-none bg-white font-bold text-purple-900">
+              <option value="Prepaid UPI (GPay / PhonePe / Paytm / Slice)">Prepaid UPI Payment (Instant Confirmation)</option>
+              <option value="Cash on Delivery">Cash on Delivery</option>
+            </select>
+          </div>
+
+          <!-- Dynamic UPI Display QR Code -->
+          <div id="upiInfoBox" class="bg-gradient-to-br from-purple-50 to-blue-50 border-2 border-purple-300 rounded-lg p-3 text-xs text-gray-800 space-y-3 shadow-inner">
+            
+            <div class="bg-purple-700 text-white font-bold text-[11px] px-2.5 py-1 rounded-md text-center tracking-wide uppercase shadow-sm flex items-center justify-center gap-1.5">
+              <i class="fa-solid fa-shield-halved text-yellow-300"></i> Scan & Pay via any UPI App
+            </div>
+
+            <!-- Dynamic QR Code Container -->
+            <div class="bg-white p-3 rounded-md border text-center space-y-2 shadow-sm">
+              <span class="text-xs font-bold text-purple-900 block uppercase tracking-wider">UPI Payment QR</span>
+              
+              <div class="relative w-44 h-44 mx-auto border-2 border-purple-200 rounded-md overflow-hidden bg-white p-1">
+                <img 
+                  id="dynamicUpiQr"
+                  src="" 
+                  alt="UPI Payment QR Code" 
+                  class="w-full h-full object-contain"
+                />
+              </div>
+
+              <div class="text-xs space-y-1">
+                <p class="font-bold text-gray-900">Account Holder: <span id="qrAccountHolder">Unique Mart</span></p>
+                <div class="flex items-center justify-center gap-1 font-mono font-bold text-purple-800 bg-purple-100 py-1 px-2 rounded">
+                  <span id="displayUpiId">7707930601@slc</span>
+                  <button onclick="copyUpiId()" class="text-xs text-purple-600 hover:text-purple-900 ml-1" title="Copy UPI ID">
+                    <i class="fa-solid fa-copy"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <p class="text-[10px] text-gray-600 text-center italic">
+              Scan QR or transfer total amount directly to the UPI ID before placing order on WhatsApp.
+            </p>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Drawer Footer with Total & Order Button -->
+      <div id="cartFooterSection" class="p-4 border-t bg-white space-y-3 shrink-0">
+        <div class="space-y-1 text-xs text-gray-600">
+          <div class="flex justify-between">
+            <span>Subtotal:</span>
+            <span id="cartSubtotal" class="font-semibold text-gray-800">₹0</span>
+          </div>
+          <div class="flex justify-between">
+            <span>Packaging & Delivery:</span>
+            <span class="font-semibold text-green-600">FREE</span>
+          </div>
+          <div class="flex justify-between text-sm font-bold text-gray-900 pt-1 border-t">
+            <span>Total Payable Amount:</span>
+            <span id="cartTotalAmount" class="text-fk-blue text-base">₹0</span>
+          </div>
+        </div>
+
+        <button 
+          onclick="submitWhatsAppOrder()" 
+          class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded text-sm flex items-center justify-center gap-2 shadow-md transition transform active:scale-95"
+        >
+          <i class="fa-brands fa-whatsapp text-lg"></i> Send Order on WhatsApp
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Dynamic JavaScript Section -->
+  <script>
+    // Footwear & General Store Seed Data
+    const INITIAL_PRODUCTS = [
+      {
+        id: 201,
+        title: "Men's Ultra-Lightweight Breathable Running Shoes & Sneakers",
+        category: "Footwear",
+        price: 999,
+        mrp: 2499,
+        rating: 4.8,
+        imageUrl: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=600&q=80",
+        description: "High performance breathable mesh sports shoes with flexible anti-slip sole. Superior shock absorption for running & gym.",
+        featured: true
+      },
+      {
+        id: 202,
+        title: "Pure Genuine Leather Men's Formal Oxford Shoes (Black)",
+        category: "Footwear",
+        price: 1499,
+        mrp: 3299,
+        rating: 4.9,
+        imageUrl: "https://images.unsplash.com/photo-1614252235316-8c857d38b5f4?auto=format&fit=crop&w=600&q=80",
+        description: "Handcrafted pure leather formal dress shoes with padded orthotic insoles. Perfect for business meetings and weddings.",
+        featured: true
+      },
+      {
+        id: 203,
+        title: "Women's Ethnic Block Heel Sandals / Designer Punjabi Jutti",
+        category: "Footwear",
+        price: 799,
+        mrp: 1899,
+        rating: 4.7,
+        imageUrl: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?auto=format&fit=crop&w=600&q=80",
+        description: "Comfortable cushioned sole ethnic partywear block sandals with intricate embroidery.",
+        featured: true
+      },
+      {
+        id: 204,
+        title: "Unisex Waterproof Soft Cushion EVA Slides & Clogs",
+        category: "Footwear",
+        price: 399,
+        mrp: 999,
+        rating: 4.6,
+        imageUrl: "https://images.unsplash.com/photo-1603808033192-082d6919d3e1?auto=format&fit=crop&w=600&q=80",
+        description: "Non-slip lightweight cloud slides for everyday indoor and beach wear.",
+        featured: false
+      },
+      {
+        id: 205,
+        title: "Kids LED Light-Up Sports Sneakers (Size 2 to 6)",
+        category: "Footwear",
+        price: 599,
+        mrp: 1299,
+        rating: 4.8,
+        imageUrl: "https://images.unsplash.com/photo-1514989940723-e8e51635b782?auto=format&fit=crop&w=600&q=80",
+        description: "Fun light-emitting LED soles with soft interior padding and sturdy velcro closure.",
+        featured: true
+      },
+      {
+        id: 101,
+        title: "Royal Golden Bone China 24-Piece Dinner Set",
+        category: "Dinner Sets",
+        price: 2499,
+        mrp: 5999,
+        rating: 4.8,
+        imageUrl: "https://images.unsplash.com/photo-1610701596007-11502861dcfa?auto=format&fit=crop&w=600&q=80",
+        description: "Premium gold-rimmed 24-piece dinner set. Microwave safe, high temperature resistant bone china ideal for grand dining.",
+        featured: true
+      },
+      {
+        id: 103,
+        title: "Handcrafted Ceramic Tea Cups & Saucers (Set of 6)",
+        category: "Tea & Coffee Sets",
+        price: 699,
+        mrp: 1499,
+        rating: 4.9,
+        imageUrl: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=600&q=80",
+        description: "Artisanal glazed ceramic tea cups with wooden saucers. Perfect heat insulation and luxury finish for morning tea.",
+        featured: false
+      },
+      {
+        id: 105,
+        title: "Crystal Clear Borosilicate Water & Juice Glasses (Set of 6)",
+        category: "Glassware",
+        price: 599,
+        mrp: 1299,
+        rating: 4.7,
+        imageUrl: "https://images.unsplash.com/photo-1544145945-f90425340c7e?auto=format&fit=crop&w=600&q=80",
+        description: "Heavy base crystal clear lead-free glass tumblers for water, juices, and mocktails.",
+        featured: false
+      },
+      {
+        id: 107,
+        title: "Deep Bass Bluetooth Stereo Headphones & Fast Type-C Cable Combo",
+        category: "Electronics & Accessories",
+        price: 899,
+        mrp: 2199,
+        rating: 4.7,
+        imageUrl: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=600&q=80",
+        description: "High clarity wireless over-ear headphones with 20h battery backup and durable nylon braided fast charging cable.",
+        featured: true
+      },
+      {
+        id: 108,
+        title: "Herbal Refreshing Gentle Face Wash (200ml) & Skin Care Kit",
+        category: "Beauty & Skincare",
+        price: 349,
+        mrp: 799,
+        rating: 4.6,
+        imageUrl: "https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&w=600&q=80",
+        description: "Natural organic herbal neem and aloe vera face wash for glowing oil-free clear skin.",
+        featured: false
+      }
+    ];
+
+    // Global Application State
+    let state = {
+      products: [],
+      cart: [],
+      activeCategory: 'All',
+      searchQuery: '',
+      sortBy: 'featured',
+      settings: {
+        storeName: "Unique Mart",
+        whatsapp: "917707930601",
+        upiId: "7707930601@slc",
+        address: "Unique Mart Superstore, Central Market"
+      },
+      orders: []
+    };
+
+    // Initialize application on page load
+    window.onload = function() {
+      // Load saved state or default
+      const savedSettings = localStorage.getItem('uniquemart_settings');
+      if (savedSettings) {
+        try { state.settings = JSON.parse(savedSettings); } catch(e){}
+      }
+
+      const savedProducts = localStorage.getItem('uniquemart_products');
+      if (savedProducts) {
+        try { state.products = JSON.parse(savedProducts); } catch(e){}
+      }
+      
+      if (!state.products || state.products.length === 0) {
+        state.products = [...INITIAL_PRODUCTS];
+      }
+
+      document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+      applySettingsToUI();
+      renderCategories();
+      renderProducts();
+      updateCartUI();
+    };
+
+    function saveState() {
+      try {
+        localStorage.setItem('uniquemart_settings', JSON.stringify(state.settings));
+        localStorage.setItem('uniquemart_products', JSON.stringify(state.products));
+      } catch(e) {}
+    }
+
+    // Render Store Categories
+    function renderCategories() {
+      const categories = [
+        'All', 
+        'Footwear', 
+        'Dinner Sets', 
+        'Tea & Coffee Sets', 
+        'Glassware', 
+        'Electronics & Accessories', 
+        'Beauty & Skincare',
+        'Clothing & Sarees',
+        'Toys & Baby Items'
+      ];
+      const container = document.getElementById('categoryContainer');
+      
+      container.innerHTML = categories.map(cat => {
+        const isActive = state.activeCategory === cat;
+        return `
+          <button 
+            onclick="filterByCategory('${cat}')"
+            class="px-3.5 py-1.5 rounded-full text-xs font-semibold transition flex items-center gap-1.5 ${
+              isActive 
+                ? 'bg-fk-blue text-white shadow-sm' 
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }"
+          >
+            ${cat === 'All' ? '<i class="fa-solid fa-border-all text-[11px]"></i>' : ''}
+            ${cat === 'Footwear' ? '<i class="fa-solid fa-shoe-prints text-[11px]"></i>' : ''}
+            ${cat}
+          </button>
+        `;
+      }).join('');
+    }
+
+    // Category click handler
+    function filterByCategory(category) {
+      state.activeCategory = category;
+      renderCategories();
+      renderProducts();
+    }
+
+    // Search input handler
+    function handleSearch() {
+      state.searchQuery = document.getElementById('searchInput').value.trim().toLowerCase();
+      renderProducts();
+    }
+
+    // Reset filters
+    function resetFilters() {
+      state.activeCategory = 'All';
+      state.searchQuery = '';
+      document.getElementById('searchInput').value = '';
+      renderCategories();
+      renderProducts();
+    }
+
+    // Render products grid
+    function renderProducts() {
+      const grid = document.getElementById('productsGrid');
+      const noResults = document.getElementById('noResults');
+      const currentCategoryTitle = document.getElementById('currentCategoryTitle');
+      const productCountText = document.getElementById('productCountText');
+
+      state.sortBy = document.getElementById('sortBy').value;
+
+      // Filter logic
+      let filtered = state.products.filter(p => {
+        const matchesCat = state.activeCategory === 'All' || p.category === state.activeCategory;
+        const matchesSearch = !state.searchQuery || 
+          p.title.toLowerCase().includes(state.searchQuery) || 
+          p.category.toLowerCase().includes(state.searchQuery) ||
+          (p.description && p.description.toLowerCase().includes(state.searchQuery));
+        return matchesCat && matchesSearch;
+      });
+
+      // Sort logic
+      if (state.sortBy === 'low-high') {
+        filtered.sort((a, b) => a.price - b.price);
+      } else if (state.sortBy === 'high-low') {
+        filtered.sort((a, b) => b.price - a.price);
+      } else if (state.sortBy === 'discount') {
+        filtered.sort((a, b) => {
+          const discA = a.mrp ? ((a.mrp - a.price) / a.mrp) : 0;
+          const discB = b.mrp ? ((b.mrp - b.price) / b.mrp) : 0;
+          return discB - discA;
+        });
+      } else if (state.sortBy === 'rating') {
+        filtered.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+      }
+
+      // Update text indicators
+      currentCategoryTitle.innerHTML = `
+        ${state.activeCategory === 'All' ? 'All Products' : state.activeCategory}
+        ${state.searchQuery ? `<span class="text-xs font-normal text-gray-500">(Search: "${state.searchQuery}")</span>` : ''}
+      `;
+      productCountText.textContent = `Showing ${filtered.length} product${filtered.length === 1 ? '' : 's'}`;
+
+      if (filtered.length === 0) {
+        grid.innerHTML = '';
+        noResults.classList.remove('hidden');
+        return;
+      }
+
+      noResults.classList.add('hidden');
+
+      grid.innerHTML = filtered.map(item => {
+        const discountPercent = item.mrp && item.mrp > item.price 
+          ? Math.round(((item.mrp - item.price) / item.mrp) * 100) 
+          : 0;
+
+        return `
+          <div class="bg-white rounded-md border border-gray-200 overflow-hidden shadow-xs hover:shadow-md transition duration-200 flex flex-col justify-between group">
+            
+            <!-- Image & Badge Container -->
+            <div class="relative bg-gray-50 p-2 sm:p-3 aspect-square flex items-center justify-center overflow-hidden cursor-pointer" onclick="openQuickView(${item.id})">
+              <img 
+                src="${item.imageUrl || 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=500&q=80'}" 
+                alt="${item.title}" 
+                class="object-contain max-h-full max-w-full group-hover:scale-105 transition duration-300"
+                onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=500&q=80';"
+              />
+
+              ${discountPercent > 0 ? `
+                <span class="absolute top-2 left-2 bg-green-600 text-white font-extrabold text-[10px] px-1.5 py-0.5 rounded shadow-xs">
+                  ${discountPercent}% OFF
+                </span>
+              ` : ''}
+
+              ${item.featured ? `
+                <span class="absolute top-2 right-2 bg-yellow-400 text-gray-900 font-extrabold text-[9px] uppercase px-1.5 py-0.5 rounded shadow-xs">
+                  HOT
+                </span>
+              ` : ''}
+            </div>
+
+            <!-- Content Container -->
+            <div class="p-2.5 sm:p-3 flex-1 flex flex-col justify-between space-y-2">
+              <div>
+                <span class="text-[10px] font-semibold text-gray-400 uppercase tracking-wider block">${item.category}</span>
+                <h3 onclick="openQuickView(${item.id})" class="text-xs sm:text-sm font-semibold text-gray-800 line-clamp-2 hover:text-fk-blue transition cursor-pointer leading-tight mt-0.5" title="${item.title}">
+                  ${item.title}
+                </h3>
+              </div>
+
+              <!-- Rating & Quality badge -->
+              <div class="flex items-center gap-1.5">
+                <span class="bg-green-700 text-white font-bold text-[10px] px-1.5 py-0.2 rounded flex items-center gap-0.5">
+                  ${item.rating || '4.8'} <i class="fa-solid fa-star text-[8px]"></i>
+                </span>
+                <span class="text-[10px] text-gray-400 font-medium truncate">Quality Assured</span>
+              </div>
+
+              <!-- Pricing & Action Button -->
+              <div class="pt-1.5 border-t border-gray-100 flex items-center justify-between gap-1">
+                <div>
+                  <div class="flex items-baseline gap-1">
+                    <span class="text-sm sm:text-base font-extrabold text-gray-900">₹${item.price.toLocaleString('en-IN')}</span>
+                    ${item.mrp ? `<span class="text-[10px] sm:text-xs text-gray-400 line-through">₹${item.mrp.toLocaleString('en-IN')}</span>` : ''}
+                  </div>
+                </div>
+
+                <button 
+                  onclick="addToCart(${item.id})"
+                  class="fk-yellow hover:bg-yellow-500 text-gray-900 font-bold p-2 sm:px-3 sm:py-1.5 rounded text-xs transition shadow-xs flex items-center justify-center gap-1 active:scale-95"
+                  title="Add to Cart"
+                >
+                  <i class="fa-solid fa-cart-plus text-xs"></i>
+                  <span class="hidden sm:inline">Add</span>
+                </button>
+              </div>
+
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Add item to cart
+    function addToCart(productId) {
+      const product = state.products.find(p => p.id === productId);
+      if (!product) return;
+
+      const existing = state.cart.find(ci => ci.id === productId);
+      if (existing) {
+        existing.qty += 1;
+      } else {
+        state.cart.push({ ...product, qty: 1 });
+      }
+
+      updateCartUI();
+      showToast(`Added "${product.title.substring(0, 22)}..." to cart!`);
+    }
+
+    // Update quantity
+    function updateQty(productId, delta) {
+      const item = state.cart.find(ci => ci.id === productId);
+      if (!item) return;
+
+      item.qty += delta;
+      if (item.qty <= 0) {
+        state.cart = state.cart.filter(ci => ci.id !== productId);
+      }
+
+      updateCartUI();
+    }
+
+    // Remove item
+    function removeFromCart(productId) {
+      state.cart = state.cart.filter(ci => ci.id !== productId);
+      updateCartUI();
+      showToast("Item removed from cart");
+    }
+
+    // Update Cart UI components
+    function updateCartUI() {
+      const totalCount = state.cart.reduce((sum, item) => sum + item.qty, 0);
+      const subtotal = state.cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+
+      document.getElementById('cartBadge').textContent = totalCount;
+      document.getElementById('cartHeaderCount').textContent = totalCount;
+      document.getElementById('cartSubtotal').textContent = `₹${subtotal.toLocaleString('en-IN')}`;
+      document.getElementById('cartTotalAmount').textContent = `₹${subtotal.toLocaleString('en-IN')}`;
+
+      renderCartDrawerItems();
+      updateUpiQrCode(subtotal);
+    }
+
+    // Render drawer cart item list
+    function renderCartDrawerItems() {
+      const container = document.getElementById('cartItemsList');
+      const checkoutFormSection = document.getElementById('checkoutFormSection');
+      const cartFooterSection = document.getElementById('cartFooterSection');
+
+      if (state.cart.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-12 space-y-3">
+            <i class="fa-solid fa-cart-arrow-down text-5xl text-gray-300"></i>
+            <p class="text-sm font-semibold text-gray-600">Your shopping cart is empty!</p>
+            <p class="text-xs text-gray-400">Explore footwear, dinner sets, and gadgets to add items.</p>
+            <button onclick="toggleCartDrawer()" class="fk-blue text-white text-xs font-bold px-4 py-2 rounded shadow hover:bg-blue-700">
+              Start Shopping
+            </button>
+          </div>
+        `;
+        checkoutFormSection.classList.add('hidden');
+        cartFooterSection.classList.add('hidden');
+        return;
+      }
+
+      checkoutFormSection.classList.remove('hidden');
+      cartFooterSection.classList.remove('hidden');
+
+      container.innerHTML = state.cart.map(item => `
+        <div class="flex items-center gap-3 p-2.5 bg-gray-50 rounded border text-xs">
+          <img 
+            src="${item.imageUrl}" 
+            alt="${item.title}" 
+            class="w-14 h-14 object-contain rounded bg-white p-1 border shrink-0"
+            onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=200&q=80';"
+          />
+          <div class="flex-1 min-w-0">
+            <h5 class="font-semibold text-gray-800 truncate">${item.title}</h5>
+            <p class="text-gray-500 mt-0.5">₹${item.price.toLocaleString('en-IN')} each</p>
+            
+            <div class="flex items-center gap-2 mt-2">
+              <div class="flex items-center border rounded bg-white">
+                <button onclick="updateQty(${item.id}, -1)" class="px-2 py-0.5 hover:bg-gray-100 font-bold text-gray-600">-</button>
+                <span class="px-2 font-bold text-gray-800 text-xs">${item.qty}</span>
+                <button onclick="updateQty(${item.id}, 1)" class="px-2 py-0.5 hover:bg-gray-100 font-bold text-gray-600">+</button>
+              </div>
+              <button onclick="removeFromCart(${item.id})" class="text-red-500 hover:text-red-700 text-xs ml-auto" title="Delete">
+                <i class="fa-solid fa-trash-can"></i>
+              </button>
+            </div>
+          </div>
+          <div class="text-right font-bold text-gray-900 shrink-0">
+            ₹${(item.price * item.qty).toLocaleString('en-IN')}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Dynamic QR Code Generator for UPI payment
+    function updateUpiQrCode(amount) {
+      const upiId = state.settings.upiId || '7707930601@slc';
+      const storeName = encodeURIComponent(state.settings.storeName || 'Unique Mart');
+      
+      document.getElementById('displayUpiId').textContent = upiId;
+      document.getElementById('qrAccountHolder').textContent = state.settings.storeName;
+
+      const upiIntent = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${storeName}&am=${amount}&cu=INR`;
+      const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(upiIntent)}`;
+
+      const qrImg = document.getElementById('dynamicUpiQr');
+      qrImg.src = qrUrl;
+    }
+
+    // Toggle UPI details box visibility
+    function toggleUpiDetails() {
+      const method = document.getElementById('paymentMethod').value;
+      const upiBox = document.getElementById('upiInfoBox');
+      if (method.includes('Prepaid UPI')) {
+        upiBox.classList.remove('hidden');
+      } else {
+        upiBox.classList.add('hidden');
+      }
+    }
+
+    // Copy UPI ID helper
+    function copyUpiId() {
+      const upiId = state.settings.upiId;
+      const tempInput = document.createElement('input');
+      tempInput.value = upiId;
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      document.execCommand('copy');
+      document.body.removeChild(tempInput);
+      showToast(`UPI ID (${upiId}) copied to clipboard!`);
+    }
+
+    // Send order directly via WhatsApp
+    function submitWhatsAppOrder() {
+      const name = document.getElementById('custName').value.trim();
+      const phone = document.getElementById('custPhone').value.trim();
+      const address = document.getElementById('custAddress').value.trim();
+      const paymentMethod = document.getElementById('paymentMethod').value;
+
+      if (!name || !phone || !address) {
+        showToast("Please fill in your Name, Phone Number, and Delivery Address!", "error");
+        return;
+      }
+
+      if (state.cart.length === 0) {
+        showToast("Your cart is empty!", "error");
+        return;
+      }
+
+      const totalAmount = state.cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+
+      let msg = `🛍️ *NEW ORDER - ${state.settings.storeName.toUpperCase()}*\n`;
+      msg += `----------------------------------------\n`;
+      msg += `👤 *Customer Name:* ${name}\n`;
+      msg += `📞 *Phone:* ${phone}\n`;
+      msg += `📍 *Delivery Address:* ${address}\n`;
+      msg += `💳 *Payment Option:* ${paymentMethod}\n`;
+      msg += `----------------------------------------\n`;
+      msg += `📦 *ORDERED ITEMS:*\n`;
+
+      state.cart.forEach((item, index) => {
+        msg += `${index + 1}. *${item.title}*\n`;
+        msg += `   Qty: ${item.qty} x ₹${item.price} = ₹${item.qty * item.price}\n`;
+      });
+
+      msg += `----------------------------------------\n`;
+      msg += `💰 *TOTAL PAYABLE:* ₹${totalAmount.toLocaleString('en-IN')}\n`;
+      msg += `----------------------------------------\n`;
+
+      if (paymentMethod.includes('Prepaid UPI')) {
+        msg += `✅ *Paid via UPI:* ${state.settings.upiId}\n`;
+      }
+
+      msg += `\nPlease confirm my order and send dispatch tracking details. Thank you!`;
+
+      let whatsappNum = state.settings.whatsapp.replace(/\D/g, '');
+      if (!whatsappNum.startsWith('91') && whatsappNum.length === 10) {
+        whatsappNum = '91' + whatsappNum;
+      }
+
+      const orderRecord = {
+        id: 'ORD-' + Date.now().toString().slice(-6),
+        date: new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }),
+        items: [...state.cart],
+        total: totalAmount,
+        customer: { name, phone, address, paymentMethod }
+      };
+      state.orders.unshift(orderRecord);
+      
+      state.cart = [];
+      updateCartUI();
+      toggleCartDrawer();
+
+      const waUrl = `https://wa.me/${whatsappNum}?text=${encodeURIComponent(msg)}`;
+      window.open(waUrl, '_blank');
+
+      showToast("Order generated! Opening WhatsApp...");
+    }
+
+    // Apply Settings to UI
+    function applySettingsToUI() {
+      document.getElementById('headerStoreName').textContent = state.settings.storeName;
+      document.getElementById('footerPhone').textContent = state.settings.whatsapp;
+      document.getElementById('footerWhatsapp').textContent = state.settings.whatsapp;
+      document.getElementById('footerUpi').textContent = state.settings.upiId;
+      document.getElementById('footerAddress').textContent = state.settings.address;
+      document.getElementById('footerStoreAbout').textContent = `${state.settings.storeName}. Your premier superstore for men's & women's footwear, bone china dinner sets, glassware, and electronics.`;
+
+      document.getElementById('settingStoreName').value = state.settings.storeName;
+      document.getElementById('settingWhatsapp').value = state.settings.whatsapp;
+      document.getElementById('settingUpi').value = state.settings.upiId;
+      document.getElementById('settingAddress').value = state.settings.address;
+    }
+
+    // Save Settings Handler
+    function handleSaveSettings(e) {
+      e.preventDefault();
+      state.settings.storeName = document.getElementById('settingStoreName').value.trim() || 'Unique Mart';
+      state.settings.whatsapp = document.getElementById('settingWhatsapp').value.trim() || '917707930601';
+      state.settings.upiId = document.getElementById('settingUpi').value.trim() || '7707930601@slc';
+      state.settings.address = document.getElementById('settingAddress').value.trim() || 'Unique Mart Main Market';
+
+      saveState();
+      applySettingsToUI();
+      closeSettingsModal();
+      showToast("Store settings saved successfully!");
+    }
+
+    // Add Product Submission Handler
+    function handleAddProductSubmit(e) {
+      e.preventDefault();
+      const title = document.getElementById('newTitle').value.trim();
+      const category = document.getElementById('newCategory').value;
+      const price = parseFloat(document.getElementById('newPrice').value);
+      const mrp = parseFloat(document.getElementById('newMrp').value) || (price * 1.5);
+      const rating = parseFloat(document.getElementById('newRating').value) || 4.8;
+      const imageUrl = document.getElementById('newImageUrl').value.trim() || 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=600&q=80';
+      const desc = document.getElementById('newDesc').value.trim() || 'High quality durable product.';
+
+      const newProduct = {
+        id: Date.now(),
+        title,
+        category,
+        price,
+        mrp,
+        rating,
+        imageUrl,
+        description: desc,
+        featured: true
+      };
+
+      state.products.unshift(newProduct);
+      saveState();
+      renderProducts();
+      closeAddProductModal();
+      document.getElementById('addProductForm').reset();
+      showToast(`New product "${title.substring(0, 15)}..." added!`);
+    }
+
+    // Open Quick View Modal
+    function openQuickView(productId) {
+      const product = state.products.find(p => p.id === productId);
+      if (!product) return;
+
+      document.getElementById('quickViewImg').src = product.imageUrl;
+      document.getElementById('quickViewCategory').textContent = product.category;
+      document.getElementById('quickViewTitle').textContent = product.title;
+      document.getElementById('quickViewRating').innerHTML = `${product.rating || '4.8'} <i class="fa-solid fa-star text-[10px]"></i>`;
+      document.getElementById('quickViewPrice').textContent = `₹${product.price.toLocaleString('en-IN')}`;
+      document.getElementById('quickViewMrp').textContent = product.mrp ? `₹${product.mrp.toLocaleString('en-IN')}` : '';
+      
+      const discountPercent = product.mrp && product.mrp > product.price 
+        ? Math.round(((product.mrp - product.price) / product.mrp) * 100) 
+        : 0;
+      document.getElementById('quickViewDiscount').textContent = discountPercent > 0 ? `${discountPercent}% OFF` : '';
+      document.getElementById('quickViewDesc').textContent = product.description || 'Premium quality product.';
+
+      const addBtn = document.getElementById('quickViewAddBtn');
+      const buyBtn = document.getElementById('quickViewBuyBtn');
+
+      addBtn.onclick = () => {
+        addToCart(product.id);
+        closeQuickViewModal();
+      };
+
+      buyBtn.onclick = () => {
+        addToCart(product.id);
+        closeQuickViewModal();
+        toggleCartDrawer();
+      };
+
+      document.getElementById('quickViewModal').classList.add('modal-active');
+    }
+
+    function closeQuickViewModal() {
+      document.getElementById('quickViewModal').classList.remove('modal-active');
+    }
+
+    // Modal Toggles
+    function openAddProductModal() {
+      document.getElementById('addProductModal').classList.add('modal-active');
+    }
+    function closeAddProductModal() {
+      document.getElementById('addProductModal').classList.remove('modal-active');
+    }
+
+    function openSettingsModal() {
+      document.getElementById('settingsModal').classList.add('modal-active');
+    }
+    function closeSettingsModal() {
+      document.getElementById('settingsModal').classList.remove('modal-active');
+    }
+
+    function toggleCartDrawer() {
+      const drawer = document.getElementById('cartDrawer');
+      if (drawer.classList.contains('hidden')) {
+        drawer.classList.remove('hidden');
+        drawer.classList.add('flex');
+      } else {
+        drawer.classList.add('hidden');
+        drawer.classList.remove('flex');
+      }
+    }
+
+    // Order History Modal
+    function openOrdersModal() {
+      const modal = document.getElementById('ordersModal');
+      const container = document.getElementById('ordersListContainer');
+
+      if (state.orders.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-10 space-y-2">
+            <i class="fa-solid fa-receipt text-4xl text-gray-300"></i>
+            <p class="font-semibold text-gray-600">No past orders found.</p>
+            <p class="text-gray-400">Your recent WhatsApp orders will show up here.</p>
+          </div>
+        `;
+      } else {
+        container.innerHTML = state.orders.map(ord => `
+          <div class="border rounded p-3 bg-gray-50 space-y-2">
+            <div class="flex justify-between items-center border-b pb-1">
+              <span class="font-bold text-fk-blue">${ord.id}</span>
+              <span class="text-gray-500 text-[10px]">${ord.date}</span>
+            </div>
+            <div class="space-y-1">
+              ${ord.items.map(i => `<div class="flex justify-between text-gray-700"><span>${i.title} (x${i.qty})</span><span>₹${i.price * i.qty}</span></div>`).join('')}
+            </div>
+            <div class="pt-1 border-t flex justify-between font-bold text-gray-900">
+              <span>Total Amount:</span>
+              <span>₹${ord.total.toLocaleString('en-IN')}</span>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      modal.classList.add('modal-active');
+    }
+
+    function closeOrdersModal() {
+      document.getElementById('ordersModal').classList.remove('modal-active');
+    }
+
+    // Toast Notification System
+    function showToast(message, type = "success") {
+      let toastContainer = document.getElementById('toastContainer');
+      if (!toastContainer) {
+        toastContainer = document.createElement('div');
+        toastContainer.id = 'toastContainer';
+        document.body.appendChild(toastContainer);
+      }
+
+      const toast = document.createElement('div');
+      toast.className = `px-4 py-2.5 rounded shadow-lg text-white font-semibold text-xs flex items-center gap-2 transform transition-all duration-300 translate-y-2 opacity-0 ${
+        type === 'error' ? 'bg-red-600' : 'bg-gray-900'
+      }`;
+      toast.innerHTML = `
+        <i class="${type === 'error' ? 'fa-solid fa-triangle-exclamation' : 'fa-solid fa-circle-check text-green-400'}"></i>
+        <span>${message}</span>
+      `;
+
+      toastContainer.appendChild(toast);
+
+      setTimeout(() => {
+        toast.classList.remove('translate-y-2', 'opacity-0');
+      }, 10);
+
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-2');
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
+  </script>
+</body>
+</html>
